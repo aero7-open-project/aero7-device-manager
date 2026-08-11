@@ -10,6 +10,7 @@
 #include "IconHelper.h"
 
 #include <QTreeView>
+#include <QApplication>
 #include <QToolBar>
 #include <QMenuBar>
 #include <QStatusBar>
@@ -28,7 +29,8 @@
 #include <QFont>
 #include <QTimer>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+MainWindow::MainWindow(const QString &initialCategory, QWidget *parent)
+    : QMainWindow(parent), m_pendingCategoryName(initialCategory) {
     setWindowTitle("Device Manager");
     resize(640, 480);
 
@@ -143,6 +145,19 @@ void MainWindow::onScanComplete(const QString &hostName,
         if (idx.isValid()) {
             m_tree->setCurrentIndex(idx);
             showProperties();
+        }
+    }
+    if (!m_pendingCategoryName.isEmpty()) {
+        const QString categoryName = m_pendingCategoryName;
+        m_pendingCategoryName.clear();
+        const QModelIndex category = findCategory(categoryName);
+        if (category.isValid()) {
+            m_tree->setCurrentIndex(category);
+            m_tree->expand(category);
+            m_tree->scrollTo(category, QAbstractItemView::PositionAtCenter);
+            statusBar()->showMessage(QString("%1 device(s)").arg(m_model->rowCount(category)));
+        } else {
+            statusBar()->showMessage(QString("No %1 hardware was detected.").arg(categoryName));
         }
     }
 }
@@ -309,7 +324,7 @@ void MainWindow::buildMenus() {
         auto *nameLabel = new QLabel("Device Manager");
 
         auto *companyLabel = new QLabel("@actuallyaridan");
-        auto *versionLabel = new QLabel("Version: 2.1.1");
+        auto *versionLabel = new QLabel("Version: " + QApplication::applicationVersion());
 
         auto *infoLayout = new QVBoxLayout;
         infoLayout->addWidget(nameLabel);
@@ -335,7 +350,7 @@ void MainWindow::buildMenus() {
         descLabel->setContentsMargins(4, 4, 4, 4);
 
         auto *creditsLabel = new QLabel(
-            "Replicated in Linux with Qt6 and real hardware backends via sysfs/procfs. Best enjoyed with AeroThemePlasma. Any Microsoft branding is used solely for referential use only, and does not aim to usurp copyrights from Microsoft.");
+            "Built for Linux with Qt 6 and real hardware backends through sysfs, procfs, udev, and the kernel driver interfaces. Designed for the Aero7 Open Project.");
         creditsLabel->setWordWrap(true);
         creditsLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
         creditsLabel->setContentsMargins(4, 4, 4, 4);
@@ -448,6 +463,23 @@ QModelIndex MainWindow::findDevice(const QString &name,
             QModelIndex found = walk(idx);
             if (found.isValid())
                 return found;
+        }
+        return {};
+    };
+    return walk(m_tree->rootIndex());
+}
+
+QModelIndex MainWindow::findCategory(const QString &name) const {
+    std::function<QModelIndex(const QModelIndex &)> walk =
+        [&](const QModelIndex &parent) -> QModelIndex {
+        for (int i = 0; i < m_model->rowCount(parent); ++i) {
+            const QModelIndex index = m_model->index(i, 0, parent);
+            if (m_model->data(index, Qt::DisplayRole).toString() == name
+                    && m_model->deviceField(index, "name").toString().isEmpty()
+                    && m_model->rowCount(index) > 0)
+                return index;
+            const QModelIndex found = walk(index);
+            if (found.isValid()) return found;
         }
         return {};
     };

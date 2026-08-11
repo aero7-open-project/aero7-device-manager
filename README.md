@@ -8,6 +8,20 @@
   </p>
 
 </div>
+
+## Aero7 search integration
+
+The Aero7 fork exposes its real hardware sections to the Start menu without
+adding separate application shortcuts:
+
+```sh
+devmgmt --list-settings-json
+devmgmt --open network-adapters
+```
+
+The first command returns the searchable section catalog. The second opens
+Device Manager, performs its normal hardware scan, and selects the requested
+section when that hardware exists.
 <br>
 
 > [!NOTE]

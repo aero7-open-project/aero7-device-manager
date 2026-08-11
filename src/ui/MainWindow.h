@@ -14,7 +14,7 @@ class QAction;
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(const QString &initialCategory = {}, QWidget *parent = nullptr);
     ~MainWindow() override;
 
 private slots:
@@ -47,7 +47,9 @@ private:
     QSet<QString> saveExpandedState() const;
     void restoreExpandedState(const QSet<QString> &expanded);
     QModelIndex findDevice(const QString &name, const QString &driver) const;
+    QModelIndex findCategory(const QString &name) const;
 
     QString m_pendingReopenName;
     QString m_pendingReopenDriver;
+    QString m_pendingCategoryName;
 };
