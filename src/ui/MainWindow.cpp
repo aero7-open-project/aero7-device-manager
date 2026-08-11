@@ -474,7 +474,7 @@ QModelIndex MainWindow::findCategory(const QString &name) const {
         [&](const QModelIndex &parent) -> QModelIndex {
         for (int i = 0; i < m_model->rowCount(parent); ++i) {
             const QModelIndex index = m_model->index(i, 0, parent);
-            if (m_model->data(index, Qt::DisplayRole).toString() == name
+            if (m_model->data(index, Qt::DisplayRole).toString().compare(name, Qt::CaseInsensitive) == 0
                     && m_model->deviceField(index, "name").toString().isEmpty()
                     && m_model->rowCount(index) > 0)
                 return index;

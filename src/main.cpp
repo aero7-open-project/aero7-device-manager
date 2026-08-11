@@ -13,7 +13,7 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setApplicationName("Device Manager");
-    app.setApplicationVersion("2.2.0");
+    app.setApplicationVersion("2.2.1");
 
     QCommandLineParser parser;
     parser.setApplicationDescription("Aero7 Device Manager with real Linux hardware backends");
