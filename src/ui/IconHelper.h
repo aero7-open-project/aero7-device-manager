@@ -1,89 +1,81 @@
 #pragma once
-#include <QHash>
+
+#include <QDebug>
+#include <QFile>
 #include <QIcon>
+#include <QSize>
 #include <QString>
 #include <initializer_list>
 
-inline QIcon tryIconName(const QString &name) {
-    QIcon icon = QIcon::fromTheme(name);
-    if (!icon.isNull()) return icon;
-    icon = QIcon::fromTheme(name + QStringLiteral("-symbolic"));
+namespace Aero7DeviceIcons {
+
+inline QString normalized(QString value) { value = value.toLower(); value.replace('_', '-'); return value; }
+
+inline QIcon exact(const QString &name)
+{
+    QIcon icon;
+    for (const int size : {8, 16, 22, 24, 32, 36, 48, 64, 72, 96, 128, 192, 256}) {
+        const QString path = QStringLiteral(":/aero7/pack/%1/%2.png").arg(size).arg(name);
+        if (QFile::exists(path)) icon.addFile(path, QSize(size, size));
+    }
     return icon;
 }
 
-inline QIcon themeIcon(std::initializer_list<const char *> names) {
-    for (const char *n : names) {
-        QIcon icon = tryIconName(QString::fromLatin1(n));
-        if (!icon.isNull()) return icon;
-    }
-    QIcon icon = QIcon::fromTheme(QStringLiteral("preferences-system"));
-    if (!icon.isNull()) return icon;
-    return QIcon::fromTheme(QStringLiteral("preferences-system-symbolic"));
+inline QString mapped(const QString &raw)
+{
+    const QString name = normalized(raw);
+    if (name.contains("previous") || name.contains("back") || name.contains("left")) return QStringLiteral("go-previous");
+    if (name.contains("next") || name.contains("forward") || name.contains("right")) return QStringLiteral("go-next");
+    if (name.contains("refresh") || name.contains("update") || name.contains("scan")) return QStringLiteral("view-refresh");
+    if (name.contains("properties") || name.contains("configure")) return QStringLiteral("document-properties");
+    if (name.contains("delete") || name.contains("remove") || name.contains("uninstall") || name.contains("disable")) return QStringLiteral("edit-delete");
+    if (name.contains("add")) return QStringLiteral("list-add");
+    if (name.contains("help")) return QStringLiteral("help-contents");
+    if (name.contains("unknown") || name.contains("question") || name.contains("warning")) return QStringLiteral("dialog-question");
+    if (name.contains("tree") || name.contains("list")) return QStringLiteral("view-list-tree");
+    if (name.contains("battery") || name.contains("kded")) return QStringLiteral("battery-full");
+    if (name.contains("bluetooth")) return QStringLiteral("bluetooth");
+    if (name.contains("optical") || name.contains("cdrom") || name.contains("dvd")) return QStringLiteral("drive-optical");
+    if (name.contains("disk") || name.contains("storage") || name.contains("harddisk") || name.contains("ide")) return QStringLiteral("drive-harddisk");
+    if (name.contains("display") || name.contains("monitor") || name.contains("video")) return QStringLiteral("display");
+    if (name.contains("network") || name.contains("ethernet")) return QStringLiteral("network-wired");
+    if (name.contains("cpu") || name.contains("processor")) return QStringLiteral("cpu");
+    if (name.contains("sound") || name.contains("audio") || name.contains("kmix")) return QStringLiteral("audio-card");
+    if (name.contains("usb") || name.contains("removable")) return QStringLiteral("usb-creator");
+    if (name.contains("keyboard")) return QStringLiteral("keyboard");
+    if (name.contains("mouse") || name.contains("pointing")) return QStringLiteral("mouse");
+    if (name.contains("phone") || name.contains("portable") || name.contains("ipad") || name.contains("ipod")) return QStringLiteral("smartphone");
+    if (name.contains("printer")) return QStringLiteral("gnome-dev-printer");
+    if (name.contains("camera")) return QStringLiteral("camera");
+    if (name.contains("security") || name.contains("firmware")) return QStringLiteral("security-high");
+    return QStringLiteral("computer");
 }
 
-inline QIcon resolveIcon(const QString &name) {
-    // Fallback chains for KDE/Breeze-specific names absent on other themes.
-    using SL = QStringList;
-    static const QHash<QString, SL> fallbacks{
-        // kded5 is the KDE daemon icon repurposed for batteries
-        {QStringLiteral("kded5"),
-         SL{"battery", "battery-good", "battery-caution"}},
-        {QStringLiteral("network-bluetooth"),
-         SL{"bluetooth-active", "bluetooth"}},
-        // input_devices_settings is KDE-specific (underscore name)
-        {QStringLiteral("input_devices_settings"),
-         SL{"preferences-desktop-peripherals", "input-gaming", "joystick"}},
-        // kmix is the KDE mixer app icon
-        {QStringLiteral("kmix"),
-         SL{"audio-card", "audio-speakers", "audio-volume-high"}},
-        {QStringLiteral("network-card"),
-         SL{"network-wired", "network"}},
-        {QStringLiteral("smartphone"),
-         SL{"phone", "multimedia-player", "pda"}},
-        {QStringLiteral("cpu"),
-         SL{"processor", "computer"}},
-        {QStringLiteral("drive-harddisk-encrypted"),
-         SL{"security-high", "security-medium"}},
-        {QStringLiteral("drive-removable-media-usb"),
-         SL{"media-removable", "drive-removable-media"}},
-        {QStringLiteral("video-display"),
-         SL{"display", "monitor"}},
-        {QStringLiteral("computer-apple-ipad"),
-         SL{"tablet", "smartphone", "phone", "pda"}},
-        {QStringLiteral("phone-apple-iphone"),
-         SL{"phone", "smartphone", "pda"}},
-        {QStringLiteral("multimedia-player-apple-ipod-touch"),
-         SL{"multimedia-player", "phone", "smartphone"}},
-        {QStringLiteral("input-gaming"),
-         SL{"joystick"}},
-        {QStringLiteral("media-optical"),
-         SL{"media-cdrom", "drive-optical"}},
-        {QStringLiteral("view-list-tree"),
-         SL{"format-justify-fill", "format-list-unordered"}},
-        {QStringLiteral("system-software-update"),
-         SL{"software-update-available", "update-notifier"}},
-        {QStringLiteral("applications-system-symbolic"),
-         SL{"applications-system"}},
-        // stock_next is an old GNOME 2 icon; go-next is the modern equivalent
-        {QStringLiteral("stock_next"),
-         SL{"go-next", "go-forward", "arrow-right"}},
-    };
+inline QIcon resolve(const QString &raw)
+{
+    QIcon icon = exact(normalized(raw));
+    if (icon.isNull()) icon = exact(mapped(raw));
+    if (icon.isNull()) icon = exact(QStringLiteral("computer"));
+    if (icon.isNull()) qWarning().noquote() << "[Aero7 Icons] Missing pack icon:" << raw;
+    return icon;
+}
 
-    if (!name.isEmpty()) {
-        QIcon icon = tryIconName(name);
+} // namespace Aero7DeviceIcons
+
+inline QIcon resolveIcon(const QString &name) { return Aero7DeviceIcons::resolve(name); }
+inline QIcon tryIconName(const QString &name) { return Aero7DeviceIcons::resolve(name); }
+inline QIcon themeIcon(std::initializer_list<const char *> names)
+{
+    for (const char *candidate : names) {
+        const QIcon icon = Aero7DeviceIcons::exact(Aero7DeviceIcons::normalized(QString::fromLatin1(candidate)));
         if (!icon.isNull()) return icon;
-
-        auto it = fallbacks.constFind(name);
-        if (it != fallbacks.constEnd()) {
-            for (const QString &fb : it.value()) {
-                icon = tryIconName(fb);
-                if (!icon.isNull()) return icon;
-            }
-        }
     }
-
-    // Absolute last resort, works on Adwaita (symbolic-only) and Breeze alike.
-    QIcon icon = QIcon::fromTheme(QStringLiteral("preferences-system"));
+    return Aero7DeviceIcons::resolve(names.size() ? QString::fromLatin1(*names.begin()) : QStringLiteral("computer"));
+}
+inline QIcon aero7ResourceIcon(const QString &path, const QString &fallback)
+{
+    const QIcon icon(path);
     if (!icon.isNull()) return icon;
-    return QIcon::fromTheme(QStringLiteral("preferences-system-symbolic"));
+    qWarning().noquote() << "[Aero7 Icons] Missing resource:" << path;
+    return Aero7DeviceIcons::resolve(fallback);
 }

@@ -1,10 +1,11 @@
 <div align="center">
 
-  # linux-devmgmt
-  <i>The Windows Device Manager, on Linux</i>
+  # Aero7 Device Manager
+  <i>Hardware management for Aero7</i>
 
   <p>
-    A faithful recreation of the Windows Device Manager built with Qt6 and real hardware backends via sysfs/procfs. Best enjoyed with <a href="https://github.com/aeroshell-desktop/aerothemeplasma">AeroThemePlasma</a>, but looks great on regular KDE as well.
+    A familiar device-management interface built with Qt 6 and real Linux
+    hardware backends through sysfs and procfs.
   </p>
 
 </div>
@@ -15,17 +16,18 @@ The Aero7 fork exposes its real hardware sections to the Start menu without
 adding separate application shortcuts:
 
 ```sh
-devmgmt --list-settings-json
-devmgmt --open network-adapters
+aero7-device-manager --list-settings-json
+aero7-device-manager --open network-adapters
 ```
 
 The first command returns the searchable section catalog. The second opens
 Device Manager, performs its normal hardware scan, and selects the requested
 section when that hardware exists.
-<br>
-
 > [!NOTE]
-> **Built for CachyOS / Arch Linux.** Also packaged as a Nix flake for NixOS.<br>Some features (DKMS uninstall, driver date lookup) depend on `dkms` and `pacman`. Other distros may need minor adjustments.
+> Aero7 Device Manager is part of the Aero7 Beta 2 package set. The application
+> embeds its approved AeroThemePlasma icon assets, so its Device Manager tree,
+> toolbar, dialogs, launcher, and window identity remain consistent when the
+> system icon theme changes.
 
 | | | |
 |:-------------------------:|:-------------------------:|:-------------------------:|
@@ -33,49 +35,17 @@ section when that hardware exists.
 | <img src="./screenshots/olddriver.png" alt="The same Driver tab of the Properties window, but this time showing an older unmaintained driver's date and version."> | <img src="./screenshots/details.png" alt="The Details tab, shwoing a dropdown with a large text area."> | <img src="./screenshots/resources.png" alt="The Resources tab, shwoing a information about a deviecs resources like IRQ and similar."> |
 
 
-## Installation
+## Installation and updates
 
-### Arch / CachyOS (AUR)
-
-```bash
-yay -S linux-devmgmt
-```
-
-### Pre-built binaries
-
-Download the latest binary for your architecture from the [Releases](https://github.com/actuallyaridan/linux-devmgmt/releases/latest) page and place it somewhere in your `$PATH`:
+Aero7 Device Manager is installed and updated through the signed
+[Aero7 package repository](https://github.com/memegeko/aero7-repo):
 
 ```bash
-chmod +x devmgmt-x86_64
-sudo mv devmgmt-x86_64 /usr/local/bin/devmgmt
+sudo pacman -S aero7-device-manager
 ```
 
-## Building
-
-### Arch / CachyOS
-
-```bash
-sudo pacman -S qt6-base cmake
-cmake -B build
-cmake --build build -j
-./build/devmgmt
-```
-
-### Nix
-
-```bash
-nix build
-./result/bin/devmgmt
-
-# or run directly
-nix run
-```
-
-A dev shell with Qt Creator and GDB is also available:
-
-```bash
-nix develop
-```
+The package replaces the earlier `linux-devmgmt` identity while preserving it
+as a compatibility provider for upgrades.
 
 ## Runtime dependencies
 
@@ -100,10 +70,9 @@ On Arch, you need these installed separately. The Nix flake handles all of them 
 - Scan for hardware changes
 - Battery levels for AirPods (per pod and case), read on request
 
-## Part of the WSL (Windows-alike Software for Linux) series
+## Project relationship
 
-Why don't you also check out the other ones?
-
-- Linux Device Manager
-- [Linux Control Panel](https://github.com/actuallyaridan/linux-control)
-- [Linux Minesweeper](https://github.com/actuallyaridan/linux-minesweeper)
+This repository is the maintained Aero7 fork of
+[linux-devmgmt](https://github.com/actuallyaridan/linux-devmgmt). Aero7 keeps
+the real Linux device backends and upstream license while maintaining its own
+application identity, packaging, desktop integration, and visual resources.

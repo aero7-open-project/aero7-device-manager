@@ -1,0 +1,33 @@
+# Maintainer: actuallyaridan <https://github.com/actuallyaridan>
+pkgname=aero7-device-manager-git
+pkgver=r0.unknown
+pkgrel=1
+pkgdesc="Aero7 hardware device manager for Linux (git)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/actuallyaridan/linux-devmgmt"
+license=('MIT')
+depends=('qt6-base')
+makedepends=('cmake' 'ninja' 'git')
+provides=('aero7-device-manager' 'linux-devmgmt')
+conflicts=('aero7-device-manager' 'linux-devmgmt')
+replaces=('linux-devmgmt')
+source=("aero7-device-manager::git+https://github.com/actuallyaridan/linux-devmgmt.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd aero7-device-manager
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+    cmake -S aero7-device-manager -B build \
+        -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    install -Dm644 aero7-device-manager/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

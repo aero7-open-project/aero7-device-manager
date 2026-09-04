@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Aero7 Device Manager
+Comment=View and manage hardware devices
+Exec=aero7-device-manager
+Icon=aero7-device-manager
+Categories=System;HardwareSettings;
+Terminal=false
+StartupNotify=true
+Keywords=Aero7;Device Manager;Hardware;

@@ -31,7 +31,7 @@
 
 MainWindow::MainWindow(const QString &initialCategory, QWidget *parent)
     : QMainWindow(parent), m_pendingCategoryName(initialCategory) {
-    setWindowTitle("Device Manager");
+    setWindowTitle("Aero7 Device Manager");
     resize(640, 480);
 
     m_model = new DeviceModel(this);
@@ -291,11 +291,13 @@ void MainWindow::buildMenus() {
         });
     m_actDisable = actionMenu->addAction("Disable Device",
         this, &MainWindow::disableCurrentDevice);
+    m_actDisable->setIcon(themeIcon({"dialog-cancel", "process-stop"}));
     m_actUninstall = actionMenu->addAction("Uninstall Device",
         this, &MainWindow::uninstallCurrentDevice);
     actionMenu->addSeparator();
     m_actScan = actionMenu->addAction("&Scan for hardware changes",
                                       this, &MainWindow::refresh);
+    m_actScan->setIcon(themeIcon({"view-refresh", "reload"}));
     actionMenu->addSeparator();
     m_actProperties = actionMenu->addAction("&Properties",
                                             this, &MainWindow::showProperties);
@@ -312,7 +314,7 @@ void MainWindow::buildMenus() {
     helpMenu->addSeparator();
     helpMenu->addAction("&About", [this]{
         QDialog dlg(this);
-        dlg.setWindowTitle("About Device Manager");
+        dlg.setWindowTitle("About Aero7 Device Manager");
         dlg.setWindowFlags(dlg.windowFlags() & ~Qt::WindowContextHelpButtonHint);
         dlg.setFixedWidth(340);
 
@@ -321,7 +323,7 @@ void MainWindow::buildMenus() {
         iconLabel->setPixmap(windowIcon().pixmap(64, 64));
         iconLabel->setAlignment(Qt::AlignCenter);
 
-        auto *nameLabel = new QLabel("Device Manager");
+        auto *nameLabel = new QLabel("Aero7 Device Manager");
 
         auto *companyLabel = new QLabel("@actuallyaridan");
         auto *versionLabel = new QLabel("Version: " + QApplication::applicationVersion());
@@ -425,28 +427,29 @@ void MainWindow::showContextMenu(const QPoint &pos) {
 
     QMenu menu(this);
 
-    menu.addAction("Update driver software...", [this, name] {
+    menu.addAction(m_actUpdateDriver->icon(), "Update driver software...", [this, name] {
         UpdateDriverDialog dlg(name, this);
         dlg.exec();
     });
 
     auto *disableAct = menu.addAction(
+        m_actDisable->icon(),
         m_actDisable->text(),
         this, &MainWindow::disableCurrentDevice);
     disableAct->setEnabled(m_actDisable->isEnabled());
 
-    auto *uninstallAct = menu.addAction("Uninstall device",
+    auto *uninstallAct = menu.addAction(m_actUninstall->icon(), "Uninstall device",
         this, &MainWindow::uninstallCurrentDevice);
     uninstallAct->setEnabled(m_actUninstall->isEnabled());
 
     menu.addSeparator();
 
-    menu.addAction("Scan for hardware changes",
+    menu.addAction(m_actScan->icon(), "Scan for hardware changes",
                    this, &MainWindow::refresh);
 
     menu.addSeparator();
 
-    menu.addAction("Properties", this, &MainWindow::showProperties);
+    menu.addAction(m_actProperties->icon(), "Properties", this, &MainWindow::showProperties);
 
     menu.exec(m_tree->viewport()->mapToGlobal(pos));
 }

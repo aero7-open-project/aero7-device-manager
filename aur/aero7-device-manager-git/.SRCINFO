@@ -1,0 +1,21 @@
+pkgbase = aero7-device-manager-git
+	pkgdesc = Aero7 hardware device manager for Linux (git)
+	pkgver = r0.unknown
+	pkgrel = 1
+	url = https://github.com/actuallyaridan/linux-devmgmt
+	arch = x86_64
+	arch = aarch64
+	license = MIT
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = git
+	depends = qt6-base
+	provides = aero7-device-manager
+	provides = linux-devmgmt
+	conflicts = aero7-device-manager
+	conflicts = linux-devmgmt
+	replaces = linux-devmgmt
+	source = aero7-device-manager::git+https://github.com/actuallyaridan/linux-devmgmt.git
+	sha256sums = SKIP
+
+pkgname = aero7-device-manager-git

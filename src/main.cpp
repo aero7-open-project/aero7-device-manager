@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
-    app.setApplicationName("Device Manager");
+    app.setApplicationName("Aero7 Device Manager");
     app.setApplicationVersion("2.2.1");
 
     QCommandLineParser parser;
@@ -47,9 +47,9 @@ int main(int argc, char *argv[]) {
         }
         initialCategory = entry->name;
     }
-    app.setWindowIcon(themeIcon({"applications-system-symbolic",
-                                 "applications-system",
-                                 "preferences-system"}));
+    app.setWindowIcon(aero7ResourceIcon(
+        QStringLiteral(":/aero7/icons/app/aero7-device-manager.png"),
+        QStringLiteral("device-manager")));
     MainWindow w(initialCategory);
     w.show();
     return app.exec();
