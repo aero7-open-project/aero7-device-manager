@@ -24,7 +24,9 @@ The first command returns the searchable section catalog. The second opens
 Device Manager, performs its normal hardware scan, and selects the requested
 section when that hardware exists.
 > [!NOTE]
-> Aero7 Device Manager is part of the Aero7 Beta 2 package set. The application
+> Device Manager is a candidate component of **Aero7 Beta 2, which has NOT
+> been publicly released**. Remaining bug fixes and stability tests are ongoing.
+> The application
 > embeds its approved AeroThemePlasma icon assets, so its Device Manager tree,
 > toolbar, dialogs, launcher, and window identity remain consistent when the
 > system icon theme changes.
